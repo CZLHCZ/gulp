@@ -1,0 +1,52 @@
+目录结构
+这里写图片描述
+
+
+代码如下
+
+var gulp = require('gulp'),
+    minifycss = require('gulp-minify-css'),
+    //minifyhtml = require('gulp-minify-html'),
+    concat = require('gulp-concat'),
+    uglify = require('gulp-uglify'),
+    //imagemin = require('gulp-imagemin'),
+    rename = require('gulp-rename'),
+    del = require('del'),
+    less = require('gulp-less');
+
+gulp.task('less', function () {
+    return gulp.src('less/bootstrap.less')
+        .pipe(less())
+        .pipe(gulp.dest('dist/style'));
+});
+gulp.task('minify', function() {
+    return gulp.src(['js/*.js'])
+        .pipe(concat('main.js')) //合并所有js到main.js
+        .pipe(rename({
+            suffix: '.min'
+        })) //rename压缩后的文件名 让main.js变成main.min.js
+        .pipe(uglify()) //执行压缩
+        .pipe(gulp.dest('./dist/js'))
+});
+gulp.task('minifycss', function() {
+    return gulp.src('./style/*.css') //压缩的文件
+        .pipe(concat('main.css')) //合并所有js到main.js
+        .pipe(rename({
+            suffix: '.min'
+        }))
+        .pipe(minifycss())
+        .pipe(gulp.dest('./dist/style')); //输出文件夹
+});
+
+gulp.task('imagemin', function() {
+    return gulp.src('./images/*.+(jpeg|jpg|png)')
+        .pipe(imagemin({
+            optimizationLevel: 7, //类型：Number  默认：3  取值范围：0-7（优化等级）
+            progressive: true, //类型：Boolean 默认：false 无损压缩jpg图片
+            interlaced: true, //类型：Boolean 默认：false 隔行扫描gif进行渲染
+            multipass: true //类型：Boolean 默认：false 多次优化svg直到完全优化
+        }))
+        .pipe(gulp.dest('./dist/images'));
+});
+
+gulp.task('default', ['minify', 'minifycss', 'less', 'imagemin']);
